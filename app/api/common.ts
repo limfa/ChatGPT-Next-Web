@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { streamBodyLog } from "./util";
 
 export const OPENAI_URL = "api.openai.com";
 const DEFAULT_PROTOCOL = "https";
@@ -20,7 +21,7 @@ export async function requestOpenai(req: NextRequest) {
     baseUrl = `${PROTOCOL}://${baseUrl}`;
   }
 
-  if (baseUrl.endsWith('/')) {
+  if (baseUrl.endsWith("/")) {
     baseUrl = baseUrl.slice(0, -1);
   }
 
@@ -31,9 +32,12 @@ export async function requestOpenai(req: NextRequest) {
     console.log("[Org ID]", process.env.OPENAI_ORG_ID);
   }
 
-  const timeoutId = setTimeout(() => {
-    controller.abort();
-  }, 10 * 60 * 1000);
+  const timeoutId = setTimeout(
+    () => {
+      controller.abort();
+    },
+    10 * 60 * 1000,
+  );
 
   const fetchUrl = `${baseUrl}/${openaiPath}`;
   const fetchOptions: RequestInit = {
@@ -46,7 +50,7 @@ export async function requestOpenai(req: NextRequest) {
       }),
     },
     method: req.method,
-    body: req.body,
+    body: streamBodyLog(req),
     // to fix #2485: https://stackoverflow.com/questions/55920957/cloudflare-worker-typeerror-one-time-use-body
     redirect: "manual",
     // @ts-ignore
