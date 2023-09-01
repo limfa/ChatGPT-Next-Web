@@ -32,6 +32,6 @@ export function streamBodyLog(req: NextRequest) {
 
 export function getIP(req: NextRequest) {
   return (
-    req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for") || req.ip
+    req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || req.ip
   );
 }
