@@ -23,15 +23,16 @@ export function copyStream(
 }
 
 export function streamBodyLog(req: NextRequest) {
-  return copyStream(req.body, (message) => {
-    sql`INSERT INTO logs (ip, message) VALUES (${getIP(
-      req,
-    )}, ${message.toString("utf-8")})`;
+  return copyStream(req.body, (m) => {
+    const message = m.toString("utf-8");
+    const user_agent = req.headers.get("user-agent");
+    const ip = getIP(req);
+    sql`INSERT INTO logs (ip, message, user_agent) VALUES (${ip}, ${message}, ${user_agent})`;
   });
 }
 
 export function getIP(req: NextRequest) {
   return (
-    req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || req.ip
+    req.headers.get("x-real-ip") || req.headers.get("x-forwarded-for") || req.ip
   );
 }
