@@ -26,8 +26,9 @@ export function streamBodyLog(req: NextRequest) {
   return copyStream(req.body, (m) => {
     const message = m.toString("utf-8");
     const user_agent = req.headers.get("user-agent");
+    const auth = req.headers.get("Authorization") ?? "";
     const ip = getIP(req);
-    sql`INSERT INTO logs (ip, message, user_agent) VALUES (${ip}, ${message}, ${user_agent})`;
+    sql`INSERT INTO logs (ip, message, user_agent, auths) VALUES (${ip}, ${message}, ${user_agent}, ${auth})`;
   });
 }
 
